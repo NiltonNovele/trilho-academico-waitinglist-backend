@@ -81,7 +81,17 @@ router.post("/send-offer", async (req, res) => {
   if (!phone || !name) return res.status(400).json({ error: "Número e nome são obrigatórios" });
 
   const cleanPhone = phone.replace(/\D/g, "");
-  const message = `🎉 Olá ${name}! O teu código da tua oferta (desconto de 50%) é válido por 30 dias. Não partilhes este código com ninguém. O Trilho Académico estará disponível a partir da Segunda Feira, 3 de novembro. Podemos mandar-te uma mensagem quando estiver disponível? (responde com sim ou não)`;
+  const message = `🎉 Olá ${name}!
+
+O teu código de oferta de 50% é válido por 30 dias.
+⚠️ Não partilhes este código com ninguém [01SYNCTECHX]
+
+📅 O Trilho Académico estará disponível a partir de Segunda-feira, 3 de novembro.
+
+💬 Podemos enviar-te uma mensagem quando estiver disponível?
+Responde com sim ou não. ✅
+
+🌟 Mal podemos esperar por te ajudar a aproveitar esta oportunidade!`;
 
   try {
     await axios.post(
