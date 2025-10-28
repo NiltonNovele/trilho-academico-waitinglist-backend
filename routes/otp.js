@@ -77,10 +77,13 @@ router.post("/verify-otp", (req, res) => {
 
 // === SEND OFFER AFTER OTP VERIFICATION ===
 router.post("/send-offer", async (req, res) => {
-  const { phone, name } = req.body;
-  if (!phone || !name) return res.status(400).json({ error: "Número e nome são obrigatórios" });
+  const { phone, name, social } = req.body;
+  if (!phone || !name)
+    return res.status(400).json({ error: "Número e nome são obrigatórios" });
 
   const cleanPhone = phone.replace(/\D/g, "");
+  const userTag = social?.startsWith("@") ? social : `@${social || "utilizador"}`;
+
   const message = `🎉 Olá ${name}!
 
 O teu código de oferta de 50% é válido por 30 dias.
@@ -88,21 +91,28 @@ O teu código de oferta de 50% é válido por 30 dias.
 
 📅 O Trilho Académico estará disponível a partir de Segunda-feira, 3 de novembro.
 
-💬 Podemos enviar-te uma mensagem quando estiver disponível?
-Responde com sim ou não. ✅
+👀 Fica atento às nossas redes sociais — vamos mencionar-te em ${userTag}!
 
-🌟 Mal podemos esperar por te ajudar a aproveitar esta oportunidade!`;
+🌟 Mal podemos esperar por te ajudar na tua jornada do ensino superior!`;
 
   try {
     await axios.post(
       `${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`,
       { number: cleanPhone, text: message },
-      { headers: { "Content-Type": "application/json", apikey: EVOLUTION_API_KEY } }
+      {
+        headers: {
+          "Content-Type": "application/json",
+          apikey: EVOLUTION_API_KEY,
+        },
+      }
     );
+
     return res.json({ success: true, message: "Mensagem de oferta enviada" });
   } catch (err) {
     console.error("❌ Error sending offer:", JSON.stringify(err.response?.data, null, 2));
-    return res.status(500).json({ error: "Falha ao enviar oferta", details: err.response?.data || err.message });
+    return res
+      .status(500)
+      .json({ error: "Falha ao enviar oferta", details: err.response?.data || err.message });
   }
 });
 
